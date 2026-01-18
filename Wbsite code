@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Für dich ♥</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ffe4ec, #ffbfd4);
+      color: #2b2b2b;
+    }
+    .card {
+      background: #fff;
+      padding: 24px 28px;
+      border-radius: 16px;
+      max-width: 360px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.8rem;
+    }
+    p {
+      margin-bottom: 1.4rem;
+      font-size: 1rem;
+    }
+    .hearts {
+      font-size: 2rem;
+      margin-bottom: 1.2rem;
+    }
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    button {
+      border: none;
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
+    }
+    .yes {
+      background: #ff4b7d;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(255,75,125,0.5);
+    }
+    .yes:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 14px rgba(255,75,125,0.6);
+    }
+    .no {
+      background: #f1f1f1;
+      color: #555;
+    }
+    .no:hover {
+      background: #e2e2e2;
+    }
+    .hidden {
+      display: none;
+      margin-top: 1.2rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="hearts">❤️💕❤️</div>
+    <h1>Willst du mein Valentine sein?</h1>
+    <p>
+
+    <div class="btn-row">
+      <button class="yes" onclick="sayYes()">Ja 🥰</button>
+      <button class="no" onclick="sayNo()">Nein 🙈</button>
+    </div>
+
+    <p id="answer-yes" class="hidden">
+      🤩🥳💖💖
+    </p>
+    <p id="answer-no" class="hidden">
+      🥺😢
+    </p>
+  </div>
+
+  <script>
+    function sayYes() {
+      document.getElementById('answer-yes').classList.remove('hidden');
+      document.getElementById('answer-no').classList.add('hidden');
+    }
+    function sayNo() {
+      document.getElementById('answer-no').classList.remove('hidden');
+      document.getElementById('answer-yes').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
