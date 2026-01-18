@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Für dich ♥</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -25,33 +25,43 @@
       box-shadow: 0 12px 30px rgba(0,0,0,0.15);
     }
     h1 { font-size: 1.6rem; margin-bottom: 0.8rem; }
-    p { margin-bottom: 1.4rem; }
+    p { margin-bottom: 1.4rem; font-size: 1rem; }
     .hearts { font-size: 2rem; margin-bottom: 1.2rem; }
-    .btn-row {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
     button {
       border: none;
       padding: 10px 18px;
       border-radius: 999px;
       font-size: 0.95rem;
       cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.2s;
       width: 100%;
       margin: 5px 0;
-      transition: background 0.2s ease;
     }
-    .yes { background: #ff4b7d; color: #fff; }
-    .no { background: #f1f1f1; }
-    .next { background: #4caf50; color: #fff; }
-    .option { background: #f8f9fa; }
-    .correct { background: #d4edda !important; }
-    .incorrect { background: #f8d7da !important; }
+    .yes { background: #ff4b7d; color: #fff; box-shadow: 0 4px 10px rgba(255,75,125,0.5); }
+    .yes:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(255,75,125,0.6); }
+    .no { background: #f1f1f1; color: #555; }
+    .no:hover { background: #e2e2e2; }
+    .next { background: #4CAF50; color: #fff; box-shadow: 0 4px 10px rgba(76,175,80,0.5); }
+    .next:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(76,175,80,0.6); }
+    .option { background: #f8f9fa; color: #333; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .option:hover { background: #e9ecef; }
+    .correct { background: #d4edda !important; color: #155724; }
+    .incorrect { background: #f8d7da !important; color: #721c24; }
     .hidden { display: none; }
+    .question { margin-top: 1.2rem; font-weight: 600; }
+    input[type="text"] {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #ddd;
+      border-radius: 12px;
+      font-size: 1rem;
+      margin: 10px 0;
+      box-sizing: border-box;
+    }
+    #send-results { background: #ff9800; color: #fff; margin-top: 10px; }
 
-    /* Modal */
+    /* Modal Styles */
     .modal {
       position: fixed;
       inset: 0;
@@ -60,8 +70,8 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
+      display: none; /* standard versteckt */
     }
-    .modal.hidden { display: none; }
     .modal-content {
       background: white;
       padding: 20px;
@@ -70,146 +80,203 @@
       max-width: 300px;
       animation: pop 0.25s ease;
     }
-    .modal-content img {
-      width: 120px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-    }
+    .modal-content img { width: 120px; border-radius: 12px; margin-bottom: 10px; }
     @keyframes pop {
       from { transform: scale(0.8); opacity: 0; }
-      to { transform: scale(1); opacity: 1; }
+      to   { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
 <body>
+  <div class="card">
+    <div class="hearts">❤️💕❤️</div>
+    <h1>Will you be my Valentine?</h1>
 
-<div class="card">
-  <div class="hearts">❤️💕❤️</div>
-  <h1>Will you be my Valentine?</h1>
+    <div class="btn-row initial-buttons">
+      <button class="yes" onclick="sayYes()">Ja 🥰</button>
+      <button class="no" onclick="sayNo()">Nein 🙈</button>
+    </div>
 
-  <div class="btn-row initial-buttons">
-    <button class="yes" onclick="sayYes()">Ja 🥰</button>
-    <button class="no" onclick="sayNo()">Nein 🙈</button>
+    <p id="answer-yes" class="hidden">🤩🥳💖💖🧸🧸</p>
+    <p id="answer-no" class="hidden">🥺😢</p>
+
+    <!-- Quiz Intro -->
+    <div id="quiz-intro" class="hidden question">
+      To be my Valentine, you'll have to answer the following questions correctly.
+      <div class="btn-row">
+        <button class="next" onclick="startQuiz()">Next</button>
+      </div>
+    </div>
+
+    <!-- Fragen 1-5 -->
+    <div id="question-1" class="hidden question">
+      <h2>1. How much do you love me?</h2>
+      <div class="btn-row">
+        <button class="option" onclick="selectAnswer(1,'Not')">Not</button>
+        <button class="option" onclick="selectAnswer(1,'A little bit')">A little bit</button>
+        <button class="option" onclick="selectAnswer(1,'Very much')">Very much</button>
+        <button class="option" onclick="selectAnswer(1,'How Garfield loves Lasagna')">How Garfield loves Lasagna</button>
+      </div>
+    </div>
+
+    <div id="question-2" class="hidden question">
+      <h2>2. Wer liebt wen mehr?</h2>
+      <div class="btn-row">
+        <button class="option" onclick="selectAnswer(2,'Luca>Nini')">Luca > Nini</button>
+        <button class="option" onclick="selectAnswer(2,'Nini>Luca')">Nini > Luca</button>
+        <button class="option" onclick="selectAnswer(2,'Luca=Nini')">Luca = Nini</button>
+      </div>
+    </div>
+
+    <div id="question-3" class="hidden question">
+      <h2>3. Mr. Universe</h2>
+      <div class="btn-row">
+        <button class="option" onclick="selectAnswer(3,'Michael B. Jordan')">Michael B. Jordan</button>
+        <button class="option" onclick="selectAnswer(3,'Chris Hemsworth')">Chris Hemsworth</button>
+        <button class="option" onclick="selectAnswer(3,'Luca Linse')">Luca Linse</button>
+        <button class="option" onclick="selectAnswer(3,'Ryan Reynolds')">Ryan Reynolds</button>
+      </div>
+    </div>
+
+    <div id="question-4" class="hidden question">
+      <h2>4. Lieblingsminion?</h2>
+      <div class="btn-row">
+        <button class="option" onclick="selectAnswer(4,'Bob')">Bob</button>
+        <button class="option" onclick="selectAnswer(4,'Kevin')">Kevin</button>
+        <button class="option" onclick="selectAnswer(4,'Stuart')">Stuart</button>
+        <button class="option" onclick="selectAnswer(4,'Carl')">Carl</button>
+      </div>
+    </div>
+
+    <div id="question-5" class="hidden question">
+      <h2>5. Mein größter Ick?</h2>
+      <div class="btn-row">
+        <button class="option" onclick="selectAnswer(5,'Ananas')">Ananas</button>
+        <button class="option" onclick="selectAnswer(5,'Dies')">Dies</button>
+        <button class="option" onclick="selectAnswer(5,'Das')">Das</button>
+        <button class="option" onclick="selectAnswer(5,'Gar nichts, ich bin perfekt')">Gar nichts, ich bin perfekt</button>
+      </div>
+    </div>
+
+    <!-- Valentinstag Auswahl -->
+    <div id="date-question" class="hidden question">
+      <h2>🎉 Glückwunsch! Jetzt bist du offiziell mein Valentine! 🎉<br>
+        Was willst du am Valentinstag machen?</h2>
+      <div class="btn-row">
+        <button class="option" onclick="selectDate('Selber kochen')">Selber kochen</button>
+        <button class="option" onclick="selectDate('Deutsch')">Deutsch</button>
+        <button class="option" onclick="selectDate('Italienisch')">Italienisch</button>
+        <button class="option" onclick="selectDate('Asiatisch')">Asiatisch</button>
+        <button class="option" onclick="selectDate('Burger')">Burger</button>
+        <button class="option" onclick="selectDate('Mexikanisch')">Mexikanisch</button>
+        <button class="option" onclick="selectDate('Sonstiges')">Sonstiges</button>
+      </div>
+      <div id="other-input" class="hidden">
+        <input type="text" id="other-text" placeholder="Was möchtest du?">
+        <button class="next" id="send-results" onclick="sendResults()">Abschicken & Fertig!</button>
+      </div>
+    </div>
+
+    <p id="quiz-complete" class="hidden">Yay! Du bist offiziell mein Valentine! 💖🥰</p>
   </div>
 
-  <p id="answer-yes" class="hidden">🤩🥳💖💖🧸🧸</p>
-  <p id="answer-no" class="hidden">🥺😢</p>
-
-  <div id="quiz-intro" class="hidden">
-    <p>To be my Valentine, you'll have to answer the following questions correctly.</p>
-    <button class="next" onclick="startQuiz()">Next</button>
+  <!-- Error Modal -->
+  <div id="error-modal" class="modal">
+    <div class="modal-content">
+      <img src="" alt="Error">
+      <h2>ERROR 404</h2>
+      <p>Freundin-Update erforderlich!!</p>
+      <button class="next" onclick="closeModal()">OK 😌</button>
+    </div>
   </div>
 
-  <div id="question-1" class="hidden">
-    <h2>1. How much do you love me?</h2>
-    <button class="option" onclick="selectAnswer(1,'Not',this)">Not</button>
-    <button class="option" onclick="selectAnswer(1,'A little bit',this)">A little bit</button>
-    <button class="option" onclick="selectAnswer(1,'Very much',this)">Very much</button>
-    <button class="option" onclick="selectAnswer(1,'How Garfield loves Lasagna',this)">How Garfield loves Lasagna</button>
-  </div>
+  <script>
+    let currentQuestion = 0;
+    let answers = {};
+    let dateChoice = '';
+    const totalQuestions = 5;
 
-  <div id="question-2" class="hidden">
-    <h2>2. Wer liebt wen mehr?</h2>
-    <button class="option" onclick="selectAnswer(2,'Luca>Nini',this)">Luca &gt; Nini</button>
-    <button class="option" onclick="selectAnswer(2,'Nini>Luca',this)">Nini &gt; Luca</button>
-    <button class="option" onclick="selectAnswer(2,'Luca=Nini',this)">Luca = Nini</button>
-  </div>
+    const correctAnswers = {
+      1: 'How Garfield loves Lasagna',
+      2: 'Luca>Nini',
+      3: 'Luca Linse',
+      4: 'Bob',
+      5: 'Gar nichts, ich bin perfekt'
+    };
 
-  <div id="question-3" class="hidden">
-    <h2>3. Mr. Universe</h2>
-    <button class="option" onclick="selectAnswer(3,'Michael B. Jordan',this)">Michael B. Jordan</button>
-    <button class="option" onclick="selectAnswer(3,'Chris Hemsworth',this)">Chris Hemsworth</button>
-    <button class="option" onclick="selectAnswer(3,'Luca Linse',this)">Luca Linse</button>
-    <button class="option" onclick="selectAnswer(3,'Ryan Reynolds',this)">Ryan Reynolds</button>
-  </div>
-
-  <div id="question-4" class="hidden">
-    <h2>4. Lieblingsminion?</h2>
-    <button class="option" onclick="selectAnswer(4,'Bob',this)">Bob</button>
-    <button class="option" onclick="selectAnswer(4,'Kevin',this)">Kevin</button>
-    <button class="option" onclick="selectAnswer(4,'Stuart',this)">Stuart</button>
-    <button class="option" onclick="selectAnswer(4,'Carl',this)">Carl</button>
-  </div>
-
-  <div id="question-5" class="hidden">
-    <h2>5. Mein größter Ick?</h2>
-    <button class="option" onclick="selectAnswer(5,'Ananas',this)">Ananas</button>
-    <button class="option" onclick="selectAnswer(5,'Dies',this)">Dies</button>
-    <button class="option" onclick="selectAnswer(5,'Das',this)">Das</button>
-    <button class="option" onclick="selectAnswer(5,'Gar nichts, ich bin perfekt',this)">Gar nichts, ich bin perfekt</button>
-  </div>
-
-  <p id="quiz-complete" class="hidden">Yay! Du bist offiziell mein Valentine! 💖🥰</p>
-</div>
-
-<!-- ERROR MODAL -->
-<div id="error-modal" class="modal hidden">
-  <div class="modal-content">
-    <img src="61umV6tiWjL._AC_UF894,1000_QL80_.jpg" alt="Error" />
-    <h2>ERROR 404</h2>
-    <p>Freundin-Update erforderlich!!</p>
-    <button class="next" onclick="closeModal()">OK 😌</button>
-  </div>
-</div>
-
-<script>
-  const correctAnswers = {
-    1: 'How Garfield loves Lasagna',
-    2: 'Luca>Nini',
-    3: 'Luca Linse',
-    4: 'Bob',
-    5: 'Gar nichts, ich bin perfekt'
-  };
-
-  function sayYes() {
-    document.querySelector('.initial-buttons').classList.add('hidden');
-    document.getElementById('answer-yes').classList.remove('hidden');
-    document.getElementById('quiz-intro').classList.remove('hidden');
-  }
-
-  function sayNo() {
-    document.getElementById('answer-no').classList.remove('hidden');
-  }
-
-  function startQuiz() {
-    document.getElementById('quiz-intro').classList.add('hidden');
-    showQuestion(1);
-  }
-
-  function showQuestion(num) {
-    for (let i = 1; i <= 5; i++) {
-      document.getElementById('question-' + i).classList.add('hidden');
+    function sayYes() {
+      document.querySelector('.initial-buttons').classList.add('hidden');
+      document.getElementById('answer-yes').classList.remove('hidden');
+      document.getElementById('quiz-intro').classList.remove('hidden');
     }
-    document.getElementById('question-' + num).classList.remove('hidden');
-  }
 
-  function selectAnswer(qNum, answer, btn) {
-    const isCorrect = correctAnswers[qNum] === answer;
-
-    // Markiere Button grün oder rot
-    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
-
-    // Fehlermodal nur anzeigen, wenn Antwort falsch ist
-    if (!isCorrect) {
-      document.getElementById('error-modal').classList.remove('hidden');
+    function sayNo() {
+      document.getElementById('answer-no').classList.remove('hidden');
     }
 
-    // Nach kurzer Zeit zur nächsten Frage
-    setTimeout(() => {
-      if (qNum < 5) {
-        showQuestion(qNum + 1);
-      } else {
-        // Quiz Ende - Blende letzte Frage aus und zeige Abschlussnachricht
-        document.getElementById('question-5').classList.add('hidden');
-        document.getElementById('quiz-complete').classList.remove('hidden');
+    function startQuiz() {
+      document.getElementById('quiz-intro').classList.add('hidden');
+      showQuestion(1);
+    }
+
+    function showQuestion(qNum) {
+      for (let i = 1; i <= totalQuestions; i++) {
+        document.getElementById(`question-${i}`).classList.add('hidden');
       }
-    }, 1000);
-  }
+      document.getElementById(`question-${qNum}`).classList.remove('hidden');
+      currentQuestion = qNum;
+    }
 
-  function closeModal() {
-    document.getElementById('error-modal').classList.add('hidden');
-  }
-</script>
+    function selectAnswer(qNum, answer) {
+      answers[qNum] = answer;
+      const isCorrect = correctAnswers[qNum] === answer;
+      event.target.classList.add(isCorrect ? 'correct' : 'incorrect');
 
+      if (!isCorrect) {
+        document.getElementById('error-modal').style.display = 'flex';
+      }
+
+      setTimeout(() => {
+        if (qNum < totalQuestions) {
+          showQuestion(qNum + 1);
+        } else {
+          document.getElementById('question-5').classList.add('hidden');
+          document.getElementById('date-question').classList.remove('hidden');
+        }
+      }, 1000);
+    }
+
+    function selectDate(choice) {
+      dateChoice = choice;
+      if (choice === 'Sonstiges') {
+        document.getElementById('other-input').classList.remove('hidden');
+      } else {
+        sendResults();
+      }
+    }
+
+    function sendResults() {
+      if (dateChoice.includes('Sonstiges')) {
+        dateChoice += ': ' + document.getElementById('other-text').value;
+      }
+
+      let result = 'Valentine Quiz Results:\n';
+      for (let q in answers) {
+        const correct = correctAnswers[q] === answers[q] ? ' ✓' : ' ✗';
+        result += `Q${q}: ${answers[q]}${correct}\n`;
+      }
+      result += `Date: ${dateChoice}`;
+
+      const whatsappUrl = `https://wa.me/015120554261?text=${encodeURIComponent(result)}`;
+      window.open(whatsappUrl, '_blank');
+
+      document.getElementById('date-question').classList.add('hidden');
+      document.getElementById('quiz-complete').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('error-modal').style.display = 'none';
+    }
+  </script>
 </body>
 </html>
