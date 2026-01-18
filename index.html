@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Für dich ♥</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: system-ui, sans-serif;
       min-height: 100vh;
@@ -17,7 +15,6 @@
       background: radial-gradient(circle at top, #ffe4ec, #ffbfd4);
       color: #2b2b2b;
     }
-
     .card {
       background: #fff;
       padding: 24px 28px;
@@ -27,19 +24,15 @@
       text-align: center;
       box-shadow: 0 12px 30px rgba(0,0,0,0.15);
     }
-
     h1 { font-size: 1.6rem; margin-bottom: 0.8rem; }
     p { margin-bottom: 1.4rem; }
-
     .hearts { font-size: 2rem; margin-bottom: 1.2rem; }
-
     .btn-row {
       display: flex;
       gap: 10px;
       justify-content: center;
       flex-wrap: wrap;
     }
-
     button {
       border: none;
       padding: 10px 18px;
@@ -48,19 +41,17 @@
       cursor: pointer;
       width: 100%;
       margin: 5px 0;
+      transition: background 0.2s ease;
     }
-
     .yes { background: #ff4b7d; color: #fff; }
     .no { background: #f1f1f1; }
-    .next { background: #4CAF50; color: #fff; }
+    .next { background: #4caf50; color: #fff; }
     .option { background: #f8f9fa; }
-
     .correct { background: #d4edda !important; }
     .incorrect { background: #f8d7da !important; }
-
     .hidden { display: none; }
 
-    /* MODAL */
+    /* Modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -70,7 +61,7 @@
       justify-content: center;
       z-index: 9999;
     }
-
+    .modal.hidden { display: none; }
     .modal-content {
       background: white;
       padding: 20px;
@@ -79,20 +70,17 @@
       max-width: 300px;
       animation: pop 0.25s ease;
     }
-
     .modal-content img {
       width: 120px;
       border-radius: 12px;
       margin-bottom: 10px;
     }
-
     @keyframes pop {
       from { transform: scale(0.8); opacity: 0; }
       to { transform: scale(1); opacity: 1; }
     }
   </style>
 </head>
-
 <body>
 
 <div class="card">
@@ -157,7 +145,7 @@
 <!-- ERROR MODAL -->
 <div id="error-modal" class="modal hidden">
   <div class="modal-content">
-    <img src="https://preview.redd.it/ever-wondered-why-this-famous-crying-cat-meme-looks-so-sad-v0-83ecyn5rjuwd1.jpg?width=640&crop=smart&auto=webp">
+    <img src="https://preview.redd.it/ever-wondered-why-this-famous-crying-cat-meme-looks-so-sad-v0-83ecyn5rjuwd1.jpg?width=640&crop=smart&auto=webp" alt="Error" />
     <h2>ERROR 404</h2>
     <p>Freundin-Update erforderlich!!</p>
     <button class="next" onclick="closeModal()">OK 😌</button>
@@ -188,24 +176,33 @@
     showQuestion(1);
   }
 
-  function showQuestion(n) {
+  function showQuestion(num) {
     for (let i = 1; i <= 5; i++) {
       document.getElementById('question-' + i).classList.add('hidden');
     }
-    document.getElementById('question-' + n).classList.remove('hidden');
+    document.getElementById('question-' + num).classList.remove('hidden');
   }
 
-  function selectAnswer(q, answer, btn) {
-    const correct = correctAnswers[q] === answer;
-    btn.classList.add(correct ? 'correct' : 'incorrect');
+  function selectAnswer(qNum, answer, btn) {
+    const isCorrect = correctAnswers[qNum] === answer;
 
-    if (!correct) {
+    // Markiere Button grün oder rot
+    btn.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+    // Fehlermodal nur anzeigen, wenn Antwort falsch ist
+    if (!isCorrect) {
       document.getElementById('error-modal').classList.remove('hidden');
     }
 
+    // Nach kurzer Zeit zur nächsten Frage
     setTimeout(() => {
-      if (q < 5) showQuestion(q + 1);
-      else document.getElementById('quiz-complete').classList.remove('hidden');
+      if (qNum < 5) {
+        showQuestion(qNum + 1);
+      } else {
+        // Quiz Ende - Blende letzte Frage aus und zeige Abschlussnachricht
+        document.getElementById('question-5').classList.add('hidden');
+        document.getElementById('quiz-complete').classList.remove('hidden');
+      }
     }, 1000);
   }
 
