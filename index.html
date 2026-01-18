@@ -228,19 +228,25 @@
     }
 
     function selectAnswer(qNum, answer) {
-      answers[qNum] = answer;
-      const isCorrect = correctAnswers[qNum] === answer;
-      event.target.classList.add(isCorrect ? 'correct' : 'incorrect');
-      
-      setTimeout(() => {
-        if (qNum < totalQuestions) {
-          showQuestion(qNum + 1);
-        } else {
-          document.getElementById('question-5').classList.add('hidden');
-          document.getElementById('date-question').classList.remove('hidden');
-        }
-      }, 1000);
+      function selectAnswer(qNum, answer) {
+  answers[qNum] = answer;
+  const isCorrect = correctAnswers[qNum] === answer;
+  event.target.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+  if (!isCorrect) {
+    document.getElementById('error-modal').classList.remove('hidden');
+  }
+
+  setTimeout(() => {
+    if (qNum < totalQuestions) {
+      showQuestion(qNum + 1);
+    } else {
+      document.getElementById('question-5').classList.add('hidden');
+      document.getElementById('date-question').classList.remove('hidden');
     }
+  }, 1200);
+}
+
 
     function selectDate(choice) {
       dateChoice = choice;
@@ -272,15 +278,39 @@
       document.getElementById('date-question').classList.add('hidden');
       document.getElementById('quiz-complete').classList.remove('hidden');
     }
+    function closeModal() {
+      document.getElementById('error-modal').classList.add('hidden');
+    }
+
   </script>
-  <!-- Error Modal -->
-<div id="error-modal" class="modal hidden">
-  <div class="modal-content">
-    <img src="https://preview.redd.it/ever-wondered-why-this-famous-crying-cat-meme-looks-so-sad-v0-83ecyn5rjuwd1.jpg?width=640&crop=smart&auto=webp&s=0695309cc84f2a3b73575a9205bfdb680f2f7853" alt="Error" />
-    <h2>ERROR 404</h2>
-    <p>Freundin-Update erforderlich!!</p>
-    <button class="next" onclick="closeModal()">OK 😌</button>
-  </div>
-</div>
+   .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 16px;
+    text-align: center;
+    max-width: 300px;
+    animation: pop 0.25s ease;
+  }
+
+  .modal-content img {
+    width: 120px;
+    border-radius: 12px;
+    margin-bottom: 10px;
+  }
+
+  @keyframes pop {
+    from { transform: scale(0.8); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
 </body>
 </html>
